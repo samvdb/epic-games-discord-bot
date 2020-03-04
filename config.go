@@ -40,5 +40,6 @@ func LoadConfig() Config {
 	fmt.Println("Discord api key is\t", configuration.ApiKey)
 	fmt.Println("Discord ChannelID is\t", configuration.ChannelID)
 	fmt.Println("Interval is\t", configuration.Interval)
+	fmt.Println("Storage path is\t", configuration.Storage)
 	return configuration
 }

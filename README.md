@@ -4,6 +4,11 @@
 cp config.dist.yml config.yml
 ```
 
+# Run Go verbose 
+```bash
+go run -v ./
+```
+
 # API Call
 
 ```bash
