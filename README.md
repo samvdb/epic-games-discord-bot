@@ -1,3 +1,11 @@
+# Requirements
+
+- Go 1.14
+- GCC ( minGW suite ) -> https://nuwen.net/files/mingw/mingw-17.1.exe
+
+## Add GCC to your PATH
+ ( windows config -> system -> advanced settings -> environment -> PATH   ( add minGW/bin folder ) reload everything
+
 # Setup config file
 
 ```bash
