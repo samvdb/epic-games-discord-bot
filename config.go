@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"os"
 	"strconv"
 )
@@ -14,19 +15,32 @@ type Config struct {
 }
 
 func LoadConfig() Config {
-	var C Config
-	C.ApiKey = os.Getenv("DISCORD_APIKEY")
-	C.ChannelID = os.Getenv("DISCORD_CHANNELID")
-	C.Storage = os.Getenv("STORAGE")
-	if C.Storage == "" {
-		C.Storage = "."
+	// Set the file name of the configurations file
+	viper.SetConfigName("config")
+
+	// Set the path to look for the configurations file
+	viper.AddConfigPath(".")
+
+	// Enable VIPER to read Environment Variables
+	viper.AutomaticEnv()
+
+	viper.SetConfigType("yml")
+	var configuration Config
+
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Error reading config file, %s", err)
 	}
-	C.Interval, _ = strconv.ParseInt(os.Getenv("DISCORD_INTERVAL"), 10, 64)
-	if C.Interval == 0 {
-		C.Interval = 120
+
+	// Set undefined variables
+	viper.SetDefault("storage", ".")
+
+	err := viper.Unmarshal(&configuration)
+	if err != nil {
+		fmt.Printf("Unable to decode into struct, %v", err)
 	}
-	fmt.Println("Discord api key is\t", C.ApiKey)
-	fmt.Println("Discord ChannelID is\t", C.ChannelID)
-	fmt.Println("Interval is\t", C.Interval)
+
+	fmt.Println("Discord api key is\t", configuration.ApiKey)
+	fmt.Println("Discord ChannelID is\t", configuration.ChannelID)
+	fmt.Println("Interval is\t", configuration.Interval)
 	return C
 }

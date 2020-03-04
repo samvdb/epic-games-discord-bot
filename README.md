@@ -1,3 +1,9 @@
+# Setup config file
+
+```bash
+cp config.dist.yml config.yml
+```
+
 # API Call
 
 ```bash

@@ -2,3 +2,4 @@ build/
 .idea
 games.sqlite
 .env
+config.yml
