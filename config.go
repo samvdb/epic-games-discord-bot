@@ -16,7 +16,7 @@ type Config struct {
 
 func LoadConfig() Config {
 	// Set the file name of the configurations file
-	viper.SetConfigName("config")
+	viper.SetConfigName("confi2g")
 
 	// Set the path to look for the configurations file
 	viper.AddConfigPath(".")
@@ -35,7 +35,10 @@ func LoadConfig() Config {
 	}
 
 	// Set undefined variables
-	viper.SetDefault("storage", ".")
+	viper.SetDefault("STORAGE", "")
+	viper.SetDefault("APIKEY", "")
+	viper.SetDefault("CHANNELID", "")
+	viper.SetDefault("INTERVAL", "120")
 
 	err := viper.Unmarshal(&configuration)
 	if err != nil {
