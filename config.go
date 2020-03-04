@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"strings"
 )
 
 type Config struct {
@@ -23,10 +25,13 @@ func LoadConfig() Config {
 	viper.AutomaticEnv()
 
 	viper.SetConfigType("yml")
+	replacer := strings.NewReplacer(`.`, `_`)
+	viper.SetEnvKeyReplacer(replacer)
+
 	var configuration Config
 
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file, %s", err)
+	if err := viper.ReadInConfig(); err == nil {
+		log.Info("Using config file config.yml")
 	}
 
 	// Set undefined variables
