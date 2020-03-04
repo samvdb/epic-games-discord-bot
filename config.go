@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"os"
-	"strconv"
 )
 
 type Config struct {
@@ -42,5 +40,5 @@ func LoadConfig() Config {
 	fmt.Println("Discord api key is\t", configuration.ApiKey)
 	fmt.Println("Discord ChannelID is\t", configuration.ChannelID)
 	fmt.Println("Interval is\t", configuration.Interval)
-	return C
+	return configuration
 }
