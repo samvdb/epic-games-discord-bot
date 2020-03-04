@@ -19,7 +19,7 @@ func LoadConfig() Config {
 	C.ChannelID = os.Getenv("DISCORD_CHANNELID")
 	C.Storage = os.Getenv("STORAGE")
 	if C.Storage == "" {
-		C.Storage = "./"
+		C.Storage = "."
 	}
 	C.Interval, _ = strconv.ParseInt(os.Getenv("DISCORD_INTERVAL"), 10, 64)
 	if C.Interval == 0 {
