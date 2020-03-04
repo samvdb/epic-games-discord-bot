@@ -17,7 +17,6 @@ RUN go get -d -v ./...
 # Install the package and create test binary
 RUN mkdir -p /build
 RUN GOARCH=amd64 CGO_ENABLED=1 go build  -a -ldflags "-linkmode external -extldflags -static"    -o /build/bot .
-RUN ls -lha /build
 # Perform any further action as an unprivileged user.
 USER nobody:nobody
 
