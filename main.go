@@ -17,7 +17,7 @@ func main() {
 	repo, err := CreateRepository(config.Storage)
 	if err != nil {
 		log.WithError(err).Fatal("could not open storage")
-		panic(err)
+		os.Exit(1)
 	}
 	client := CreateDiscord(config.ApiKey, repo)
 
@@ -25,29 +25,29 @@ func main() {
 	ctx, done := context.WithCancel(context.Background())
 	g, gctx := errgroup.WithContext(ctx)
 	g.Go(func() error {
+		client.Connect()
 		signalChannel := make(chan os.Signal, 1)
 		signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
-
 		select {
 		case sig := <-signalChannel:
 			log.Debug("Received signal: %s\n", sig)
 			done()
 		case <-gctx.Done():
 			log.Debug("closing goroutine")
+			client.Close()
 			return gctx.Err()
 		}
 
 		return nil
 	})
 
-	// just a ticker every 1s
+	// Epic gamestore
 	g.Go(func() error {
 		ticker := time.NewTicker(time.Duration(config.Interval) * time.Second)
+
 		for {
 			select {
 			case <-ticker.C:
-
-
 				response, err := api.get()
 				if err != nil {
 					log.WithError(err).Fatal("error while fetching games from api")
@@ -57,7 +57,6 @@ func main() {
 					if err != nil {
 						return err
 					}
-
 				}
 
 				log.Debug("finished fetching free games")
@@ -73,4 +72,6 @@ func main() {
 	} else {
 		log.WithError(err).Fatal("received error")
 	}
+	client.Close()
+	os.Exit(1)
 }

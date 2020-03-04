@@ -8,8 +8,15 @@ import (
 )
 
 type DiscordClient struct {
-	session     *discordgo.Session
+	session    *discordgo.Session
 	repository *Repository
+}
+
+type DiscordMessage struct {
+	Title string
+	Description string
+	Image string
+	Color string
 }
 
 func CreateDiscord(token string, storage *Repository) DiscordClient {
@@ -19,15 +26,28 @@ func CreateDiscord(token string, storage *Repository) DiscordClient {
 	}
 
 	return DiscordClient{
-		session:     session,
+		session:    session,
 		repository: storage,
 	}
 }
 
+func (d *DiscordClient) Connect() error {
+	err := d.session.Open()
+	if err != nil {
+		log.WithError(err).Fatal("Could not connect to discord")
+	}
+	return err
+}
+
+func (d *DiscordClient) Close() {
+	log.Info("Closing discord session")
+	d.session.Close()
+}
 
 func (d *DiscordClient) Post(channelID string, game Game) error {
 
-	if d.IsPublished(channelID, game) {
+	// drop error for now
+	if ok, _ := d.IsPublished(channelID, game); ok {
 		log.WithFields(log.Fields{"channel": channelID, "game": game.Title}).Info("Game is already published on channel")
 		return nil
 	}
@@ -51,33 +71,24 @@ func (d *DiscordClient) Post(channelID string, game Game) error {
 		Timestamp: time.Now().Format(time.RFC3339), // Discord wants ISO8601; RFC3339 is an extension of ISO8601 and should be completely compatible.
 		Title:     game.Title,
 	}
-
-	//_, err := d.session.ChannelMessage(channelID, "abc")
-	//
-	//if err != nil {
-	//	log.WithError(err).Fatal("Unable to post message on discord")
-	//}
-	err := d.session.Open()
-	if err != nil {
-		log.WithError(err).Fatal("Could not connect to discord")
-		return err
-	}
-	defer d.session.Close()
-	_, err = d.session.ChannelMessageSendEmbed(channelID, embed)
+	_, err := d.session.ChannelMessageSendEmbed(channelID, embed)
 
 	if err != nil {
 		log.WithError(err).Fatal("Unable to post message on discord")
 	}
 	log.WithFields(log.Fields{"channel": channelID, "game": game.Title}).Info("published game")
 
-	d.MarkAsPublished(channelID, game)
+	if err := d.MarkAsPublished(channelID, game); err != nil {
+		log.WithError(err).Error("Could not mark game as published")
+	}
+
 	return err
 }
 
-func (d *DiscordClient) MarkAsPublished(channelID string, game Game) {
-	d.repository.MarkPublished(channelID, game)
+func (d *DiscordClient) MarkAsPublished(channelID string, game Game) error {
+	return d.repository.MarkPublished(channelID, game.Title, game.Id, "epic")
 }
 
-func (d *DiscordClient) IsPublished(channelID string, game Game) bool {
-	return d.repository.IsPublished(channelID, game)
+func (d *DiscordClient) IsPublished(channelID string, game Game) (bool, error) {
+	return d.repository.IsPublished(channelID, game.Title, "epic")
 }

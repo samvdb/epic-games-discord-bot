@@ -1,3 +1,4 @@
 build/
 .idea
 games.sqlite
+.env

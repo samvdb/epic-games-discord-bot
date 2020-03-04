@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type Request struct {
@@ -34,10 +35,35 @@ type Response struct {
 type Game struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
+	Id string `json:"id"`
+	Namespace string `json:"namespace"`
+	Categories []struct{
+		Path string `json:"path"`
+	}
+	LinkedOfferNs string `json:"linkedOfferNs"`
+	LinkedOfferId string `json:"linkedOfferId"`
 	Images      []struct {
 		Type string `json:"type"`
 		URL  string `json:"url"`
 	} `json:"keyImages"`
+	ProductSlug string `json:""`
+	Promotions struct {
+		PromotionalOffers []struct {
+			Offers []Offer `json:"promotionalOffers"`
+		} `json:"promotionalOffers"`
+		UpcomingPromotionalOffers []struct {
+			Offers []Offer `json:"promotionalOffers"`
+		} `json:"upcomingPromotionalOffers"`
+	} `json:"promotions"`
+}
+
+type Offer struct {
+	Start time.Time `json:"startDate"`
+	End time.Time `json:"endDate"`
+	DiscountSetting struct{
+		Type string `json:"discountType"`
+		Percentage int64 `json:"discountPercentage"`
+	} `json:"discountSetting"`
 }
 
 type Api struct {
@@ -94,7 +120,7 @@ func (a *Api) createQuery() string {
 	q := "query promotionsQuery($namespace: String!, $country: String!, $locale: String!) { Catalog { "
 	q += fmt.Sprintf(`catalogOffers(namespace: $namespace, locale: $locale, params: {category: "%s", country: $country, sortBy: "%s", sortDir: "%s"})`, category, sort, sortDir)
 	// response element
-	q += "{ elements { title description id keyImages { type url } productSlug promotions { promotionalOffers { promotionalOffers { startDate endDate } } } } }"
+	q += "{ elements { title description id categories { path } linkedOfferNs linkedOfferId keyImages { type url } productSlug promotions { promotionalOffers { promotionalOffers { startDate endDate discountSetting { discountType discountPercentage } } } upcomingPromotionalOffers { promotionalOffers { startDate endDate discountSetting { discountType discountPercentage } } }} } }"
 	q += "} }"
 
 	return q
