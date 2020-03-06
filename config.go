@@ -8,15 +8,15 @@ import (
 )
 
 type Config struct {
-	ApiKey   string
-	Interval int64 // in seconds
+	ApiKey    string
+	Interval  int64 // in seconds
 	ChannelID string
-	Storage string
+	Storage   string
 }
 
 func LoadConfig() Config {
 	// Set the file name of the configurations file
-	viper.SetConfigName("confi2g")
+	viper.SetConfigName("config")
 
 	// Set the path to look for the configurations file
 	viper.AddConfigPath(".")

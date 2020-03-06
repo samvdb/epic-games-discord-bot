@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
@@ -13,10 +14,10 @@ type DiscordClient struct {
 }
 
 type DiscordMessage struct {
-	Title string
+	Title       string
 	Description string
-	Image string
-	Color string
+	Image       string
+	Color       string
 }
 
 func CreateDiscord(token string, storage *Repository) DiscordClient {
@@ -45,7 +46,9 @@ func (d *DiscordClient) Close() {
 }
 
 func (d *DiscordClient) Post(channelID string, game Game) error {
-
+	if len(game.Promotions.PromotionalOffers) < 1 {
+		return fmt.Errorf("No promotional offers for %s", game.Title)
+	}
 	// drop error for now
 	if ok, _ := d.IsPublished(channelID, game); ok {
 		log.WithFields(log.Fields{"channel": channelID, "game": game.Title}).Info("Game is already published on channel")
@@ -60,8 +63,13 @@ func (d *DiscordClient) Post(channelID string, game Game) error {
 		Description: game.Description,
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{
-				Name:   "Title",
-				Value:  game.Title,
+				Name:   "Promotion starts:",
+				Value:  game.Promotions.PromotionalOffers[0].Offers[0].Start.String(),
+				Inline: true,
+			},
+			&discordgo.MessageEmbedField{
+				Name:   "Promotion ends:",
+				Value:  game.Promotions.PromotionalOffers[0].Offers[0].End.String(),
 				Inline: true,
 			},
 		},
@@ -70,6 +78,9 @@ func (d *DiscordClient) Post(channelID string, game Game) error {
 		},
 		Timestamp: time.Now().Format(time.RFC3339), // Discord wants ISO8601; RFC3339 is an extension of ISO8601 and should be completely compatible.
 		Title:     game.Title,
+		//To complete - need to concat https://www.epicgames.com/store/en-US/product/ + game.ProductSlug
+		//However, it might be better to put either put this in the db directly, or make it work with Variables set in api.go here
+		URL: "https://www.epicgames.com/store/en-US/product/" + game.ProductSlug,
 	}
 	_, err := d.session.ChannelMessageSendEmbed(channelID, embed)
 

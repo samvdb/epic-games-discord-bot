@@ -35,19 +35,19 @@ type Response struct {
 type Game struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	Id string `json:"id"`
-	Namespace string `json:"namespace"`
-	Categories []struct{
+	Id          string `json:"id"`
+	Namespace   string `json:"namespace"`
+	Categories  []struct {
 		Path string `json:"path"`
 	}
 	LinkedOfferNs string `json:"linkedOfferNs"`
 	LinkedOfferId string `json:"linkedOfferId"`
-	Images      []struct {
+	Images        []struct {
 		Type string `json:"type"`
 		URL  string `json:"url"`
 	} `json:"keyImages"`
 	ProductSlug string `json:""`
-	Promotions struct {
+	Promotions  struct {
 		PromotionalOffers []struct {
 			Offers []Offer `json:"promotionalOffers"`
 		} `json:"promotionalOffers"`
@@ -58,11 +58,11 @@ type Game struct {
 }
 
 type Offer struct {
-	Start time.Time `json:"startDate"`
-	End time.Time `json:"endDate"`
-	DiscountSetting struct{
-		Type string `json:"discountType"`
-		Percentage int64 `json:"discountPercentage"`
+	Start           time.Time `json:"startDate"`
+	End             time.Time `json:"endDate"`
+	DiscountSetting struct {
+		Type       string `json:"discountType"`
+		Percentage int64  `json:"discountPercentage"`
 	} `json:"discountSetting"`
 }
 
