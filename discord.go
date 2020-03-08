@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 type DiscordClient struct {
@@ -60,21 +61,34 @@ func (d *DiscordClient) Post(channelID string, game Game) error {
 	embed := &discordgo.MessageEmbed{
 		Author:      &discordgo.MessageEmbedAuthor{},
 		Color:       0x00ff00, // Green
-		Description: game.Description,
+		Description: "Epic Games is offering " + game.Description + " for free. Click the link above to go to the store page and add it to you library.",
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{
 				Name:   "Promotion starts:",
 				Value:  game.Promotions.PromotionalOffers[0].Offers[0].Start.String(),
-				Inline: true,
+				Inline: false,
 			},
 			&discordgo.MessageEmbedField{
 				Name:   "Promotion ends:",
 				Value:  game.Promotions.PromotionalOffers[0].Offers[0].End.String(),
+				Inline: false,
+			},
+			&discordgo.MessageEmbedField{
+				Name:   "Score on store:",
+				Value:  "87",
+				Inline: true,
+			},
+			&discordgo.MessageEmbedField{
+				Name:   "Metascore:",
+				Value:  "76",
 				Inline: true,
 			},
 		},
 		Image: &discordgo.MessageEmbedImage{
 			URL: imgUrl,
+		},
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: "https://www.pngitem.com/pimgs/m/122-1223088_one-bot-discord-avatar-hd-png-download.png",
 		},
 		Timestamp: time.Now().Format(time.RFC3339), // Discord wants ISO8601; RFC3339 is an extension of ISO8601 and should be completely compatible.
 		Title:     game.Title,
