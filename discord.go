@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
@@ -47,7 +46,8 @@ func (d *DiscordClient) Close() {
 
 func (d *DiscordClient) Post(channelID string, game Game) error {
 	if len(game.Promotions.PromotionalOffers) < 1 {
-		return fmt.Errorf("No promotional offers for %s", game.Title)
+		log.Errorf("No promotional offers for %s", game.Title)
+		return nil
 	}
 	// drop error for now
 	if ok, _ := d.IsPublished(channelID, game); ok {
