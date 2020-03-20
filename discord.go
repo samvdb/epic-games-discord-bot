@@ -2,6 +2,7 @@ package main
 
 import (
 	"time"
+
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
@@ -74,12 +75,12 @@ func (d *DiscordClient) Post(channelID string, game Game) error {
 			},
 			&discordgo.MessageEmbedField{
 				Name:   "Score on store:",
-				Value:  "87",
+				Value:  "xx",
 				Inline: true,
 			},
 			&discordgo.MessageEmbedField{
 				Name:   "Metascore:",
-				Value:  "76",
+				Value:  "xx",
 				Inline: true,
 			},
 		},
